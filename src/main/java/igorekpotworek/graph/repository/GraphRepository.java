@@ -1,6 +1,7 @@
 package igorekpotworek.graph.repository;
 
 import igorekpotworek.graph.algortihms.DijkstraAlgorithm;
+import igorekpotworek.graph.model.DirectedGraph;
 import igorekpotworek.graph.model.Graph;
 import igorekpotworek.infrastructure.Guard;
 import io.vavr.collection.Set;
@@ -8,8 +9,10 @@ import io.vavr.control.Try;
 import lombok.val;
 
 public class GraphRepository {
+
   private final Guard guard = new Guard();
-  private Graph<String> graph = new Graph<>();
+
+  private Graph<String> graph = new DirectedGraph<>();
 
   public Try<Graph<String>> addNode(String node) {
     return guard.write(() -> graph.addNode(node).onSuccess(g -> graph = g));
