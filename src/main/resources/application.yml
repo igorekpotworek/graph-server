@@ -1,0 +1,4 @@
+server:
+  port: 50000
+  numberOfThreads: 8
+  socketTimeout: 30000
