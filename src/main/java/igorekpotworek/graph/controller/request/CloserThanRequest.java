@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class CloserThanRequest {
-    String source;
-    int radius;
+  String source;
+  int radius;
 }

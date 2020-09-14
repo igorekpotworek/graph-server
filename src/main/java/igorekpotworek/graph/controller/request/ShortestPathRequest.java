@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class ShortestPathRequest {
-    String source;
-    String target;
+  String source;
+  String target;
 }

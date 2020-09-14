@@ -16,98 +16,97 @@ import java.util.concurrent.TimeUnit;
 @Value
 @Slf4j
 public class Server {
-    int port;
-    int socketTimeout;
-    ExecutorService threadPool;
+  int port;
+  int socketTimeout;
+  ExecutorService threadPool;
 
-    List<StartupHook> doOnStart;
-    List<ShutdownHook> doOnClose;
-    Router router;
+  List<StartupHook> doOnStart;
+  List<ShutdownHook> doOnClose;
+  Router router;
 
-    private Server(ServerBuilder builder) {
-        this.port = builder.port;
-        this.socketTimeout = builder.socketTimeout;
-        this.threadPool = Executors.newFixedThreadPool(builder.numberOfThreads);
-        this.doOnStart = builder.doOnStart;
-        this.doOnClose = builder.doOnClose;
-        this.router = builder.router;
+  private Server(ServerBuilder builder) {
+    this.port = builder.port;
+    this.socketTimeout = builder.socketTimeout;
+    this.threadPool = Executors.newFixedThreadPool(builder.numberOfThreads);
+    this.doOnStart = builder.doOnStart;
+    this.doOnClose = builder.doOnClose;
+    this.router = builder.router;
+  }
+
+  public static ServerBuilder builder() {
+    return new ServerBuilder();
+  }
+
+  @SneakyThrows
+  public void start() {
+    log.info("Starting tcp server on port: {}", port);
+    try (val serverSocket = new ServerSocket(port)) {
+      while (true) {
+        val clientSocket = serverSocket.accept();
+        clientSocket.setSoTimeout(socketTimeout);
+        threadPool.submit(new ConnectionHandler(clientSocket, router, doOnStart, doOnClose));
+      }
+    } finally {
+      shutdown();
+    }
+  }
+
+  private void shutdown() {
+    log.info("Shutting down server");
+    threadPool.shutdown();
+    try {
+      if (!threadPool.awaitTermination(30, TimeUnit.SECONDS)) {
+        threadPool.shutdownNow();
+      }
+    } catch (InterruptedException ex) {
+      threadPool.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  public static class ServerBuilder {
+    private int port;
+    private int numberOfThreads;
+    private int socketTimeout;
+    private Router router;
+
+    private List<StartupHook> doOnStart = List.empty();
+    private List<ShutdownHook> doOnClose = List.empty();
+
+    private ServerBuilder() {}
+
+    public ServerBuilder router(Router router) {
+      this.router = router;
+      return this;
     }
 
-    public static ServerBuilder builder() {
-        return new ServerBuilder();
+    public ServerBuilder port(int port) {
+      this.port = port;
+      return this;
     }
 
-    @SneakyThrows
-    public void start() {
-        log.info("Starting tcp server on port: {}", port);
-        try (val serverSocket = new ServerSocket(port)) {
-            while (true) {
-                val clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout(socketTimeout);
-                threadPool.submit(new ConnectionHandler(clientSocket, router, doOnStart, doOnClose));
-            }
-        } finally {
-            shutdown();
-        }
+    public ServerBuilder socketTimeout(int socketTimeout) {
+      this.socketTimeout = socketTimeout;
+      return this;
     }
 
-    private void shutdown() {
-        log.info("Shutting down server");
-        threadPool.shutdown();
-        try {
-            if (!threadPool.awaitTermination(30, TimeUnit.SECONDS)) {
-                threadPool.shutdownNow();
-            }
-        } catch (InterruptedException ex) {
-            threadPool.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+    public ServerBuilder numberOfThreads(int numberOfThreads) {
+      this.numberOfThreads = numberOfThreads;
+      return this;
     }
 
-    public static class ServerBuilder {
-        private int port;
-        private int numberOfThreads;
-        private int socketTimeout;
-        private Router router;
-
-        private List<StartupHook> doOnStart = List.empty();
-        private List<ShutdownHook> doOnClose = List.empty();
-
-        private ServerBuilder() {
-        }
-
-        public ServerBuilder router(Router router) {
-            this.router = router;
-            return this;
-        }
-
-        public ServerBuilder port(int port) {
-            this.port = port;
-            return this;
-        }
-
-        public ServerBuilder socketTimeout(int socketTimeout) {
-            this.socketTimeout = socketTimeout;
-            return this;
-        }
-
-        public ServerBuilder numberOfThreads(int numberOfThreads) {
-            this.numberOfThreads = numberOfThreads;
-            return this;
-        }
-
-        public ServerBuilder doOnStart(StartupHook doOnStart) {
-            this.doOnStart = this.doOnStart.append(doOnStart);
-            return this;
-        }
-
-        public ServerBuilder doOnClose(ShutdownHook doOnClose) {
-            this.doOnClose = this.doOnClose.append(doOnClose);
-            return this;
-        }
-
-        public Server build() {
-            return new Server(this);
-        }
+    public ServerBuilder doOnStart(StartupHook doOnStart) {
+      this.doOnStart = this.doOnStart.append(doOnStart);
+      return this;
     }
+
+    public ServerBuilder doOnClose(ShutdownHook doOnClose) {
+      this.doOnClose = this.doOnClose.append(doOnClose);
+      return this;
+    }
+
+    public Server build() {
+      return new Server(this);
+    }
+  }
 }

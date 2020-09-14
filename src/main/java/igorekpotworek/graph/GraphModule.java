@@ -20,41 +20,41 @@ import static java.lang.String.format;
 @Import(ServerModule.class)
 class GraphModule {
 
-    @Bean
-    GraphRepository graphRepository() {
-        return new GraphRepository();
-    }
+  @Bean
+  GraphRepository graphRepository() {
+    return new GraphRepository();
+  }
 
-    @Bean
-    List<Controller> controllers(GraphRepository graphRepository) {
-        return List.of(
-                new AddEdgeController(graphRepository),
-                new AddNodeController(graphRepository),
-                new CloserThanController(graphRepository),
-                new GreetingsController(),
-                new RemoveEdgeController(graphRepository),
-                new RemoveNodeController(graphRepository),
-                new ShortestPathController(graphRepository));
-    }
+  @Bean
+  List<Controller> controllers(GraphRepository graphRepository) {
+    return List.of(
+        new AddEdgeController(graphRepository),
+        new AddNodeController(graphRepository),
+        new CloserThanController(graphRepository),
+        new GreetingsController(),
+        new RemoveEdgeController(graphRepository),
+        new RemoveNodeController(graphRepository),
+        new ShortestPathController(graphRepository));
+  }
 
-    @Bean
-    ExceptionHandler exceptionHandler() {
-        return new GraphExceptionHandler();
-    }
+  @Bean
+  ExceptionHandler exceptionHandler() {
+    return new GraphExceptionHandler();
+  }
 
-    @Bean
-    StartupHook onStart() {
-        return (out, s) -> out.println(format("HI, I AM %s", s.getId()));
-    }
+  @Bean
+  StartupHook onStart() {
+    return (out, s) -> out.println(format("HI, I AM %s", s.getId()));
+  }
 
-    @Bean
-    ShutdownHook onEnd() {
-        return (out, s) ->
-                out.println(format("BYE %s, WE SPOKE FOR %s MS", s.getClientName(), s.sessionTime()));
-    }
+  @Bean
+  ShutdownHook onEnd() {
+    return (out, s) ->
+        out.println(format("BYE %s, WE SPOKE FOR %s MS", s.getClientName(), s.sessionTime()));
+  }
 
-    @Bean
-    CloseConnectionPredicate closeConnectionPredicate() {
-        return (r) -> r.getBody().equals("BYE MATE!");
-    }
+  @Bean
+  CloseConnectionPredicate closeConnectionPredicate() {
+    return (r) -> r.getBody().equals("BYE MATE!");
+  }
 }

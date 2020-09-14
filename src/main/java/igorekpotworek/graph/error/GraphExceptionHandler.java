@@ -12,21 +12,21 @@ import static io.vavr.Predicates.instanceOf;
 @Slf4j
 public class GraphExceptionHandler implements ExceptionHandler {
 
-    public Response handle(Throwable e) {
-        return Match(e)
-                .of(
-                        Case(
-                                $(instanceOf(NodeAlreadyExistException.class)),
-                                __ -> error("ERROR: NODE ALREADY EXISTS")),
-                        Case($(instanceOf(NodeNotFoundException.class)), __ -> error("ERROR: NODE NOT FOUND")),
-                        Case(
-                                $(instanceOf(RouteNoteFoundException.class)),
-                                __ -> new Response.ErrorResponse("SORRY, I DID NOT UNDERSTAND THAT")),
-                        Case(
-                                $(),
-                                __ -> {
-                                    log.error("Unexpected error:", e);
-                                    return error("ERROR: INTERNAL SERVER ERROR");
-                                }));
-    }
+  public Response handle(Throwable e) {
+    return Match(e)
+        .of(
+            Case(
+                $(instanceOf(NodeAlreadyExistException.class)),
+                __ -> error("ERROR: NODE ALREADY EXISTS")),
+            Case($(instanceOf(NodeNotFoundException.class)), __ -> error("ERROR: NODE NOT FOUND")),
+            Case(
+                $(instanceOf(RouteNoteFoundException.class)),
+                __ -> new Response.ErrorResponse("SORRY, I DID NOT UNDERSTAND THAT")),
+            Case(
+                $(),
+                __ -> {
+                  log.error("Unexpected error:", e);
+                  return error("ERROR: INTERNAL SERVER ERROR");
+                }));
+  }
 }

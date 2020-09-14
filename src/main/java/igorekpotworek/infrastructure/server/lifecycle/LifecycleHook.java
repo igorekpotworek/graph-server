@@ -7,9 +7,7 @@ import java.util.function.BiConsumer;
 
 public interface LifecycleHook extends BiConsumer<PrintWriter, Session> {
 
-    interface StartupHook extends LifecycleHook {
-    }
+  interface StartupHook extends LifecycleHook {}
 
-    interface ShutdownHook extends LifecycleHook {
-    }
+  interface ShutdownHook extends LifecycleHook {}
 }

@@ -21,33 +21,33 @@ import static io.vavr.control.Try.success;
 @RequiredArgsConstructor
 public class AddNodeController implements Controller {
 
-    private static final Pattern PATTERN = Pattern.compile("ADD NODE ([a-zA-Z\\-0-9]*)");
+  private static final Pattern PATTERN = Pattern.compile("ADD NODE ([a-zA-Z\\-0-9]*)");
 
-    private final GraphRepository graphRepository;
-    private final AddNodeDeserializer deserializer = new AddNodeDeserializer();
+  private final GraphRepository graphRepository;
+  private final AddNodeDeserializer deserializer = new AddNodeDeserializer();
 
+  @Override
+  public boolean matches(String command) {
+    return PATTERN.matcher(command).matches();
+  }
+
+  @Override
+  public Try<Response> handle(Request request, Session session) {
+    val addNodeRequest = deserializer.deserialize(request.getBody());
+    return addNodeRequest
+        .flatMap(r -> graphRepository.addNode(r.getName()))
+        .map(__ -> ok("NODE ADDED"));
+  }
+
+  private static class AddNodeDeserializer implements Deserializer<AddNodeRequest> {
     @Override
-    public boolean matches(String command) {
-        return PATTERN.matcher(command).matches();
+    public Try<AddNodeRequest> deserialize(String request) {
+      val matcher = PATTERN.matcher(request);
+      if (matcher.find()) {
+        return success(new AddNodeRequest(matcher.group(1)));
+      } else {
+        return failure(new DeserializationException());
+      }
     }
-
-    @Override
-    public Try<Response> handle(Request request, Session session) {
-        val addNodeRequest = deserializer.deserialize(request.getBody());
-        return addNodeRequest
-                .flatMap(r -> graphRepository.addNode(r.getName()))
-                .map(__ -> ok("NODE ADDED"));
-    }
-
-    private static class AddNodeDeserializer implements Deserializer<AddNodeRequest> {
-        @Override
-        public Try<AddNodeRequest> deserialize(String request) {
-            val matcher = PATTERN.matcher(request);
-            if (matcher.find()) {
-                return success(new AddNodeRequest(matcher.group(1)));
-            } else {
-                return failure(new DeserializationException());
-            }
-        }
-    }
+  }
 }

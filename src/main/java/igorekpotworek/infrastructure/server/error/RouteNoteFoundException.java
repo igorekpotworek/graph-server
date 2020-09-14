@@ -1,4 +1,3 @@
 package igorekpotworek.infrastructure.server.error;
 
-public class RouteNoteFoundException extends IllegalArgumentException {
-}
+public class RouteNoteFoundException extends IllegalArgumentException {}

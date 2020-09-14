@@ -20,29 +20,29 @@ import static java.util.function.Function.identity;
 @RequiredArgsConstructor
 class Router {
 
-    private final List<Controller> controllers;
-    private final ExceptionHandler exceptionHandler;
-    private final CloseConnectionPredicate closeConnectionPredicate;
+  private final List<Controller> controllers;
+  private final ExceptionHandler exceptionHandler;
+  private final CloseConnectionPredicate closeConnectionPredicate;
 
-    void handleRequest(BufferedReader in, PrintWriter out, Session session) {
-        Stream.continually(() -> tryRead(in))
-                .takeWhile(Option::isDefined)
-                .flatMap(identity())
-                .map(Request::new)
-                .takeWhile(not(closeConnectionPredicate))
-                .map(r -> handleRequest(r, session))
-                .forEach(it -> out.println(it.body()));
-    }
+  void handleRequest(BufferedReader in, PrintWriter out, Session session) {
+    Stream.continually(() -> tryRead(in))
+        .takeWhile(Option::isDefined)
+        .flatMap(identity())
+        .map(Request::new)
+        .takeWhile(not(closeConnectionPredicate))
+        .map(r -> handleRequest(r, session))
+        .forEach(it -> out.println(it.body()));
+  }
 
-    private Option<String> tryRead(BufferedReader in) {
-        return Option(Try.of(in::readLine).recover(SocketTimeoutException.class, (__) -> null).get());
-    }
+  private Option<String> tryRead(BufferedReader in) {
+    return Option(Try.of(in::readLine).recover(SocketTimeoutException.class, (__) -> null).get());
+  }
 
-    private Response handleRequest(Request request, Session session) {
-        return controllers
-                .find(it -> it.matches(request.getBody()))
-                .toTry(RouteNoteFoundException::new)
-                .flatMap(it -> it.handle(new Request(request.getBody()), session))
-                .getOrElseGet(exceptionHandler::handle);
-    }
+  private Response handleRequest(Request request, Session session) {
+    return controllers
+        .find(it -> it.matches(request.getBody()))
+        .toTry(RouteNoteFoundException::new)
+        .flatMap(it -> it.handle(new Request(request.getBody()), session))
+        .getOrElseGet(exceptionHandler::handle);
+  }
 }

@@ -21,35 +21,35 @@ import static io.vavr.control.Try.success;
 @RequiredArgsConstructor
 public class ShortestPathController implements Controller {
 
-    private static final Pattern PATTERN =
-            Pattern.compile("SHORTEST PATH ([a-zA-Z\\-0-9]*) ([a-zA-Z\\-0-9]*)");
+  private static final Pattern PATTERN =
+      Pattern.compile("SHORTEST PATH ([a-zA-Z\\-0-9]*) ([a-zA-Z\\-0-9]*)");
 
-    private final GraphRepository graphRepository;
-    private final ShortestPathDeserializer deserializer = new ShortestPathDeserializer();
+  private final GraphRepository graphRepository;
+  private final ShortestPathDeserializer deserializer = new ShortestPathDeserializer();
 
+  @Override
+  public boolean matches(String command) {
+    return PATTERN.matcher(command).matches();
+  }
+
+  @Override
+  public Try<Response> handle(Request request, Session session) {
+    val shortestPathRequest = deserializer.deserialize(request.getBody());
+    return shortestPathRequest.flatMap(
+        r -> graphRepository.shortestPath(r.getSource(), r.getTarget()).map(p -> ok(p.toString())));
+  }
+
+  private static class ShortestPathDeserializer implements Deserializer<ShortestPathRequest> {
     @Override
-    public boolean matches(String command) {
-        return PATTERN.matcher(command).matches();
+    public Try<ShortestPathRequest> deserialize(String request) {
+      val matcher = PATTERN.matcher(request);
+      if (matcher.find()) {
+        val source = matcher.group(1);
+        val target = matcher.group(2);
+        return success(new ShortestPathRequest(source, target));
+      } else {
+        return failure(new DeserializationException());
+      }
     }
-
-    @Override
-    public Try<Response> handle(Request request, Session session) {
-        val shortestPathRequest = deserializer.deserialize(request.getBody());
-        return shortestPathRequest.flatMap(
-                r -> graphRepository.shortestPath(r.getSource(), r.getTarget()).map(p -> ok(p.toString())));
-    }
-
-    private static class ShortestPathDeserializer implements Deserializer<ShortestPathRequest> {
-        @Override
-        public Try<ShortestPathRequest> deserialize(String request) {
-            val matcher = PATTERN.matcher(request);
-            if (matcher.find()) {
-                val source = matcher.group(1);
-                val target = matcher.group(2);
-                return success(new ShortestPathRequest(source, target));
-            } else {
-                return failure(new DeserializationException());
-            }
-        }
-    }
+  }
 }

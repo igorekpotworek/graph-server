@@ -15,61 +15,59 @@ import static igorekpotworek.infrastructure.server.Response.error;
 @Configuration
 public class ServerModule {
 
-    @Bean
-    @ConfigurationProperties(prefix = "server")
-    ServerConfig serverConfig() {
-        return new ServerConfig();
-    }
+  @Bean
+  @ConfigurationProperties(prefix = "server")
+  ServerConfig serverConfig() {
+    return new ServerConfig();
+  }
 
-    @Bean
-    @ConditionalOnMissingBean(value = Controller.class, parameterizedContainer = List.class)
-    List<Controller> defaultControllers() {
-        return List.of();
-    }
+  @Bean
+  @ConditionalOnMissingBean(value = Controller.class, parameterizedContainer = List.class)
+  List<Controller> defaultControllers() {
+    return List.of();
+  }
 
-    @Bean
-    @ConditionalOnMissingBean(ShutdownHook.class)
-    ShutdownHook defaultShutdownHook() {
-        return (__, s) -> {
-        };
-    }
+  @Bean
+  @ConditionalOnMissingBean(ShutdownHook.class)
+  ShutdownHook defaultShutdownHook() {
+    return (__, s) -> {};
+  }
 
-    @Bean
-    @ConditionalOnMissingBean(StartupHook.class)
-    StartupHook defaultStartupHook() {
-        return (__, s) -> {
-        };
-    }
+  @Bean
+  @ConditionalOnMissingBean(StartupHook.class)
+  StartupHook defaultStartupHook() {
+    return (__, s) -> {};
+  }
 
-    @Bean
-    @ConditionalOnMissingBean(ExceptionHandler.class)
-    ExceptionHandler defaultExceptionHandler() {
-        return (__) -> error("ERROR: INTERNAL SERVER ERROR");
-    }
+  @Bean
+  @ConditionalOnMissingBean(ExceptionHandler.class)
+  ExceptionHandler defaultExceptionHandler() {
+    return (__) -> error("ERROR: INTERNAL SERVER ERROR");
+  }
 
-    @Bean
-    @ConditionalOnMissingBean(CloseConnectionPredicate.class)
-    CloseConnectionPredicate defaultCloseConnectionPredicate() {
-        return (__) -> false;
-    }
+  @Bean
+  @ConditionalOnMissingBean(CloseConnectionPredicate.class)
+  CloseConnectionPredicate defaultCloseConnectionPredicate() {
+    return (__) -> false;
+  }
 
-    @Bean
-    Router router(
-            List<Controller> controllers,
-            ExceptionHandler exceptionHandler,
-            CloseConnectionPredicate closeConnectionPredicate) {
-        return new Router(controllers, exceptionHandler, closeConnectionPredicate);
-    }
+  @Bean
+  Router router(
+      List<Controller> controllers,
+      ExceptionHandler exceptionHandler,
+      CloseConnectionPredicate closeConnectionPredicate) {
+    return new Router(controllers, exceptionHandler, closeConnectionPredicate);
+  }
 
-    @Bean
-    Server server(ServerConfig serverConfig, Router router, StartupHook onStart, ShutdownHook onEnd) {
-        return Server.builder()
-                .port(serverConfig.getPort())
-                .socketTimeout(serverConfig.getSocketTimeout())
-                .numberOfThreads(serverConfig.getNumberOfThreads())
-                .doOnStart(onStart)
-                .doOnClose(onEnd)
-                .router(router)
-                .build();
-    }
+  @Bean
+  Server server(ServerConfig serverConfig, Router router, StartupHook onStart, ShutdownHook onEnd) {
+    return Server.builder()
+        .port(serverConfig.getPort())
+        .socketTimeout(serverConfig.getSocketTimeout())
+        .numberOfThreads(serverConfig.getNumberOfThreads())
+        .doOnStart(onStart)
+        .doOnClose(onEnd)
+        .router(router)
+        .build();
+  }
 }

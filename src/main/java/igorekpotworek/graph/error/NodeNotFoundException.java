@@ -1,4 +1,3 @@
 package igorekpotworek.graph.error;
 
-public class NodeNotFoundException extends IllegalStateException {
-}
+public class NodeNotFoundException extends IllegalStateException {}

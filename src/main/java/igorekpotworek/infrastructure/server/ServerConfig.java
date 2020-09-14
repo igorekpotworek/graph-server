@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ServerConfig {
-    private int port;
-    private int numberOfThreads;
-    private int socketTimeout;
+  private int port;
+  private int numberOfThreads;
+  private int socketTimeout;
 }

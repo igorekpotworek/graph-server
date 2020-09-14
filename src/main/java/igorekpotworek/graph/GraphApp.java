@@ -9,16 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class GraphApp implements CommandLineRunner {
-    @Autowired
-    private Server server;
+  @Autowired private Server server;
 
-    public static void main(String[] args) {
-        val app = new SpringApplication(GraphApp.class);
-        app.run(args);
-    }
+  public static void main(String[] args) {
+    val app = new SpringApplication(GraphApp.class);
+    app.run(args);
+  }
 
-    @Override
-    public void run(String... args) {
-        server.start();
-    }
+  @Override
+  public void run(String... args) {
+    server.start();
+  }
 }

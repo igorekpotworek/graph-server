@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class AddNodeRequest {
-    String name;
+  String name;
 }

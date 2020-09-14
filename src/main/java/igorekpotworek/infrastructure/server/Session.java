@@ -13,29 +13,29 @@ import static java.util.UUID.randomUUID;
 @Data
 public class Session {
 
-    private final UUID id;
-    private final long timestamp;
+  private final UUID id;
+  private final long timestamp;
 
-    private Option<String> clientName = none();
+  private Option<String> clientName = none();
 
-    public Session(UUID id, long timestamp) {
-        this.id = id;
-        this.timestamp = timestamp;
-    }
+  public Session(UUID id, long timestamp) {
+    this.id = id;
+    this.timestamp = timestamp;
+  }
 
-    public static Session getInstance() {
-        return new Session(randomUUID(), currentTimeMillis());
-    }
+  public static Session getInstance() {
+    return new Session(randomUUID(), currentTimeMillis());
+  }
 
-    public String getClientName() {
-        return clientName.getOrElse("ANONYMOUS");
-    }
+  public String getClientName() {
+    return clientName.getOrElse("ANONYMOUS");
+  }
 
-    public void setClientName(String clientName) {
-        this.clientName = some(clientName);
-    }
+  public void setClientName(String clientName) {
+    this.clientName = some(clientName);
+  }
 
-    public long sessionTime() {
-        return currentTimeMillis() - timestamp;
-    }
+  public long sessionTime() {
+    return currentTimeMillis() - timestamp;
+  }
 }

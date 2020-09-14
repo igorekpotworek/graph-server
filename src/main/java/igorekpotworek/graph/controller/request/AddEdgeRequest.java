@@ -4,7 +4,7 @@ import lombok.Value;
 
 @Value
 public class AddEdgeRequest {
-    String source;
-    String target;
-    int weight;
+  String source;
+  String target;
+  int weight;
 }
