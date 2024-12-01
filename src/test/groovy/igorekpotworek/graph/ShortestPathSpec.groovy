@@ -1,6 +1,12 @@
 package igorekpotworek.graph
 
-class ShortestPathSpec extends ControllerSpec implements GraphSpec, ClientSpec {
+import igorekpotworek.graph.repository.GraphRepository
+import org.springframework.beans.factory.annotation.Autowired
+
+class ShortestPathSpec extends ControllerSpec implements ClientSpec {
+
+    @Autowired
+    GraphRepository graphRepository
 
     def 'should return shortest path'() {
         when:
@@ -15,6 +21,9 @@ class ShortestPathSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         then:
         response == "3"
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
     def 'should return error if node not found'() {
@@ -33,6 +42,9 @@ class ShortestPathSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         then:
         response == Integer.MAX_VALUE.toString()
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
 }

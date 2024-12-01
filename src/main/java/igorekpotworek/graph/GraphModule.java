@@ -4,7 +4,6 @@ import igorekpotworek.graph.controller.*;
 import igorekpotworek.graph.error.GraphExceptionHandler;
 import igorekpotworek.graph.repository.GraphRepository;
 import igorekpotworek.infrastructure.server.Controller;
-import igorekpotworek.infrastructure.server.ServerModule;
 import igorekpotworek.infrastructure.server.error.ExceptionHandler;
 import igorekpotworek.infrastructure.server.lifecycle.CloseConnectionPredicate;
 import igorekpotworek.infrastructure.server.lifecycle.LifecycleHook.ShutdownHook;
@@ -12,12 +11,10 @@ import igorekpotworek.infrastructure.server.lifecycle.LifecycleHook.StartupHook;
 import io.vavr.collection.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import static java.lang.String.format;
 
 @Configuration
-@Import(ServerModule.class)
 class GraphModule {
 
   @Bean

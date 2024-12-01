@@ -1,6 +1,13 @@
 package igorekpotworek.graph
 
-class CloserThanSpec extends ControllerSpec implements GraphSpec, ClientSpec {
+import igorekpotworek.graph.repository.GraphRepository
+import org.springframework.beans.factory.annotation.Autowired
+
+class CloserThanSpec extends ControllerSpec implements ClientSpec {
+
+    @Autowired
+    GraphRepository graphRepository
+
 
     def 'should return nodes closer than given radius'() {
         when:
@@ -15,6 +22,9 @@ class CloserThanSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         then:
         response == "B,C"
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
     def 'should return error if node not found'() {

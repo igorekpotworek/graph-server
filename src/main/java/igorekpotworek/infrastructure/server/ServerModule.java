@@ -7,12 +7,14 @@ import igorekpotworek.infrastructure.server.lifecycle.LifecycleHook.StartupHook;
 import io.vavr.collection.List;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static igorekpotworek.infrastructure.server.Response.error;
 
 @Configuration
+@EnableConfigurationProperties
 public class ServerModule {
 
   @Bean
@@ -33,23 +35,24 @@ public class ServerModule {
     return (__, s) -> {};
   }
 
-  @Bean
-  @ConditionalOnMissingBean(StartupHook.class)
-  StartupHook defaultStartupHook() {
-    return (__, s) -> {};
-  }
+    @Bean
+    @ConditionalOnMissingBean(StartupHook.class)
+    StartupHook defaultStartupHook() {
+        return (__, s) -> {
+        };
+    }
 
-  @Bean
-  @ConditionalOnMissingBean(ExceptionHandler.class)
-  ExceptionHandler defaultExceptionHandler() {
-    return (__) -> error("ERROR: INTERNAL SERVER ERROR");
-  }
+    @Bean
+    @ConditionalOnMissingBean(ExceptionHandler.class)
+    ExceptionHandler defaultExceptionHandler() {
+        return (__) -> error("ERROR: INTERNAL SERVER ERROR");
+    }
 
-  @Bean
-  @ConditionalOnMissingBean(CloseConnectionPredicate.class)
-  CloseConnectionPredicate defaultCloseConnectionPredicate() {
-    return (__) -> false;
-  }
+    @Bean
+    @ConditionalOnMissingBean(CloseConnectionPredicate.class)
+    CloseConnectionPredicate defaultCloseConnectionPredicate() {
+        return (__) -> false;
+    }
 
   @Bean
   Router router(

@@ -5,19 +5,23 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"igorekpotworek.graph", "igorekpotworek.infrastructure.server"})
+@EnableAutoConfiguration
 public class GraphApp implements CommandLineRunner {
-  @Autowired private Server server;
 
-  public static void main(String[] args) {
-    val app = new SpringApplication(GraphApp.class);
-    app.run(args);
-  }
+    @Autowired
+    private Server server;
 
-  @Override
-  public void run(String... args) {
-    server.start();
-  }
+    public static void main(String[] args) {
+        val app = new SpringApplication(GraphApp.class);
+        app.run(args);
+    }
+
+    @Override
+    public void run(String... args) {
+        server.start();
+    }
 }

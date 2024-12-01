@@ -1,6 +1,12 @@
 package igorekpotworek.graph
 
-class AddEdgeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
+import igorekpotworek.graph.repository.GraphRepository
+import org.springframework.beans.factory.annotation.Autowired
+
+class AddEdgeSpec extends ControllerSpec implements ClientSpec {
+
+    @Autowired
+    GraphRepository graphRepository
 
     def 'should add edge'() {
         when:
@@ -20,6 +26,8 @@ class AddEdgeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
         then:
         secondEdgeResponse == "EDGE ADDED"
 
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
     def 'should not add edge if weight is negative'() {
@@ -33,6 +41,9 @@ class AddEdgeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         and:
         !graphRepository.containsEdge("A", "B")
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
     def 'should not add edge if weight is zero'() {
@@ -46,6 +57,9 @@ class AddEdgeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         and:
         !graphRepository.containsEdge("A", "B")
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
     def 'should not add edge if node not found'() {

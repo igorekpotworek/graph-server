@@ -1,6 +1,12 @@
 package igorekpotworek.graph
 
-class AddNodeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
+import igorekpotworek.graph.repository.GraphRepository
+import org.springframework.beans.factory.annotation.Autowired
+
+class AddNodeSpec extends ControllerSpec implements ClientSpec {
+
+    @Autowired
+    GraphRepository graphRepository
 
     def 'should add node'() {
         when:
@@ -17,6 +23,9 @@ class AddNodeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         then:
         errorResponse == "ERROR: NODE ALREADY EXISTS"
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
 }

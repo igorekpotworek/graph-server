@@ -1,6 +1,12 @@
 package igorekpotworek.graph
 
-class RemoveNodeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
+import igorekpotworek.graph.repository.GraphRepository
+import org.springframework.beans.factory.annotation.Autowired
+
+class RemoveNodeSpec extends ControllerSpec implements ClientSpec {
+
+    @Autowired
+    GraphRepository graphRepository
 
     def 'should remove node'() {
         when:
@@ -18,6 +24,9 @@ class RemoveNodeSpec extends ControllerSpec implements GraphSpec, ClientSpec {
 
         and:
         !graphRepository.containsEdge("A", "B")
+
+        cleanup:
+        graphRepository.removeAllVertices()
     }
 
     def 'should return error if node not found'() {
